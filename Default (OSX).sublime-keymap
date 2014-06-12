@@ -1,5 +1,8 @@
 [
 	{
-		"keys": ["{"], "command": "blade_spacer"
+		"keys": ["{"], "command": "blade_spacer", "context": [
+			{ "key": "selector", "operator": "equal", "operand": "text.html.laravel-blade,text.html" },
+			{ "key": "preceding_text", "operator": "not_regex_contains", "operand": "(for(each)?|if|switch|while)[^\\{]+$", "match_all": true }
+		]
 	}
 ]
