@@ -32,8 +32,9 @@ How it works
 
 Sublime text already handles the auto-closing of braces. This plugin automatically adds spaces between double (or triple) curly braces in blade files for readability.
 
-The cursor in the example will be represented by ` | `
+_The cursor is represented by ` | ` in the examples:_
 
-So typing `{{` will yield `{{ | }}` -- notice the spaces and cursor position. It should work with `{{{  }}}` and `{{--  Comments --}}` too!
+ * typing `{{` will yield `{{ | }}` -- notice the spaces and cursor position
+ * should work with `{{{  }}}` and `{{-- Comments --}}` too!
 
 Feedback welcome, [open an issue here](https://github.com/austenc/blade-spacer/issues). 
