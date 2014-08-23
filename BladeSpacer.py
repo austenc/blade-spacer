@@ -22,7 +22,6 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
             self.view.sel().add(sublime.Region(middle, middle))
 
 
-
 class BladeSpacerCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         for sel in self.view.sel():
@@ -49,17 +48,6 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
 
                 # add two spaces and center! write function 
                 self.addSpaces(edit, last-1)
-
-            # # Comment like {{--  --}}, plugin causes it to be {{ --}} at first
-            # elif(lastChar == '-' and charBeforeLast == '-' and self.view.substr(last-3) == ' ' and self.view.substr(last-4) == '{'):
-            #     # Remove the space, add two spaces and center
-            #     self.view.erase(edit, sublime.Region(charBeforeLast, self.view.substr(last-3)))
-                
-                # add closing --'s
-                
-            
-
-
 
     def addSpaces(self, edit, pos):
         # add 2 spaces
