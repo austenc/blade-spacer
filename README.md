@@ -34,4 +34,6 @@ Sublime text already handles the auto-closing of braces. This plugin automatical
 
 The cursor in the example will be represented by ` | `
 
-So typing `{{` will yield `{{ | }}` (notice the spaces and cursor position. Naturally `{{{` will also yield `{{{ | }}}` like one would expect. 
+So typing `{{` will yield `{{ | }}` -- notice the spaces and cursor position. It should work with `{{{  }}}` and `{{--  Comments --}}` too!
+
+Feedback welcome, [open an issue here](https://github.com/austenc/blade-spacer/issues). 

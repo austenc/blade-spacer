@@ -1,8 +1,20 @@
 [
-	{
-		"keys": ["{"], "command": "blade_spacer", "context": [
+	{ "keys": ["-"], "command": "blade_spacer_comment", "context": [
+			{ "key": "selector", "operator": "equal", "operand": "text.html.laravel-blade,text.html" },
+			{ "key": "preceding_text", "operator": "regex_contains", "operand": "\\{\\{\\s-", "match_all": true }
+		]
+	},
+	{ "keys": ["{"], "command": "blade_spacer", "context": [
 			{ "key": "selector", "operator": "equal", "operand": "text.html.laravel-blade,text.html" },
 			{ "key": "preceding_text", "operator": "not_regex_contains", "operand": "(for(each)?|if|switch|while)[^\\{]+$", "match_all": true }
 		]
-	}
+	},
+	{ "keys": ["{"], "command": "wrap_block", "args": {"begin": "{", "end": "}"}, "context":
+		[
+			{ "key": "indented_block", "match_all": true },
+			{ "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+			{ "key": "following_text", "operator": "regex_match", "operand": "^$", "match_all": true },
+		]
+	},	
 ]
