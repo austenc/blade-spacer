@@ -14,10 +14,10 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 
             # Add two spaces and two dashes at end
             pos = last
-            self.view.insert(edit, pos+1, '  --')
+            self.view.insert(edit, pos+1, ' --')
 
             # move cursor to middle
-            middle = pos+2
+            middle = pos+1
             self.view.sel().clear()
             self.view.sel().add(sublime.Region(middle, middle))
 
