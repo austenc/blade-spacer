@@ -36,5 +36,6 @@ _The cursor is represented by ` | ` in the examples:_
 
  * typing `{{` will yield `{{ | }}` -- notice the spaces and cursor position
  * should work with `{{{  }}}` and `{{-- Comments --}}` too!
+ * Laravel5 syntax support `{!! | !!}`
 
 Feedback welcome, [open an issue here](https://github.com/austenc/blade-spacer/issues). 

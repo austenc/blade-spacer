@@ -1,5 +1,22 @@
 import sublime, sublime_plugin
 
+class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        for sel in self.view.sel():
+
+            last = sel.end()
+
+            # Insert an exclamation like usual keypress
+            self.view.insert(edit, last, "!")
+
+            # Add space and ending
+            self.view.insert(edit, last+1, "  !!")
+            
+            # move cursor to middle
+            self.view.sel().subtract(sublime.Region(last+5, last+5))
+            self.view.sel().add(sublime.Region(last+2, last+2))
+
+
 class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         for sel in self.view.sel():
@@ -18,7 +35,8 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
             
             # move cursor to middle
             middle = pos+1
-            self.view.sel().subtract(sublime.Region(pos,pos))
+
+            self.view.sel().subtract(sublime.Region(pos, pos))            
             self.view.sel().add(sublime.Region(middle, middle))
 
 
@@ -43,7 +61,7 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                 else:
                     self.addSpaces(edit, last)
 
-            #triple {{{ }}}
+            # triple {{{ }}}
             elif(lastChar == '{' and charBeforeLast == ' ' and charBeforeThat == '{'):
                 # erase previous space
                 self.view.erase(edit, sublime.Region(last-1, last-2))
@@ -53,6 +71,7 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
 
                 # add two spaces and center
                 self.addSpaces(edit, last-1)
+
 
     def addSpaces(self, edit, pos):
         # subtract current region from selection
