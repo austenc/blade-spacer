@@ -1,4 +1,59 @@
-import sublime, sublime_plugin
+import sublime, sublime_plugin, pprint
+
+class BladeSpacerFormatFileCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        view = self.window.active_view()
+
+        # Run the text command
+        view.run_command('blade_spacer_format')
+            
+
+class BladeSpacerFormatCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        # triple-brace
+        self.spaceTag(edit, '{{{')
+        self.spaceTag(edit, '}}}', False)
+
+        # L5
+        self.spaceTag(edit, '{!!')
+        self.spaceTag(edit, '!!}', False)
+
+        # comments
+        self.spaceTag(edit, '{{--')
+        self.spaceTag(edit, '--}}', False)
+
+        # double-brace
+        self.spaceTag(edit, '{{')
+        self.spaceTag(edit, '}}', False)        
+                
+    def spaceTag(self, edit, tag, begin = True):
+
+        regions = self.view.find_all(tag, sublime.LITERAL)
+        offset = 0
+
+        for region in regions:
+            region.a += offset
+            region.b += offset
+
+            # is this a begin tag, or an end tag?
+            if(begin == True):
+                pos       = region.b
+                insert_at = pos
+                # If it's a double, is it valid?
+                if(tag == '{{' and (self.view.substr(pos) == '{' or self.view.substr(pos) == '-')):
+                    continue
+
+            else:
+                pos       = region.a - 1
+                insert_at = region.a
+                if(tag == '}}' and (self.view.substr(pos) == '}' or self.view.substr(pos) == '-')):
+                    continue
+                    
+            # insert spaces if we made it this far
+            if(self.view.substr(pos) != ' '):
+                self.view.insert(edit, insert_at, ' ')
+                offset += 1
+
 
 class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
     def run(self, edit):
