@@ -38,4 +38,7 @@ _The cursor is represented by ` | ` in the examples:_
  * should work with `{{{  }}}` and `{{-- Comments --}}` too!
  * Laravel5 syntax support `{!! | !!}`
 
+ **Since 2.2.0**
+ A command has been added to space every set of blade syntax tags in the currently open file. It is under the 'Blade Spacer: Format File' option in the command palette (`Ctrl+Shift+P` by default in windows / linux, and `Cmd+Shift+P` on mac).
+
 Feedback welcome, [open an issue here](https://github.com/austenc/blade-spacer/issues). 
