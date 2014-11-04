@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, pprint
+import sublime, sublime_plugin
 
 class BladeSpacerFormatFileCommand(sublime_plugin.WindowCommand):
     def run(self):
