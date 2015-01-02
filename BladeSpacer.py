@@ -156,7 +156,7 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
 
                     # rewrap the selection
                     self.view.insert(edit, start - 1, ' ')
-                    self.view.insert(edit, end, ' ')                
+                    self.view.insert(edit, end, ' ')
 
 
     def addSpaces(self, edit, pos):
