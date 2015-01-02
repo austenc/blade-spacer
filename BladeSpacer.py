@@ -98,7 +98,7 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 class BladeSpacerCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         # insert any closing brackets like sublime normally does
-        self.view.run_command('insert_snippet', {"contents": "{$0}"})
+        self.view.run_command('insert_snippet', {"contents": "{${0:$SELECTION}}"})
 
         for sel in self.view.sel():
             last           = sel.end()
