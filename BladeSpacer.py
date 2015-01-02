@@ -101,31 +101,62 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
         self.view.run_command('insert_snippet', {"contents": "{${0:$SELECTION}}"})
 
         for sel in self.view.sel():
-            last           = sel.end()
-            lastChar       = self.view.substr(last-1)
-            charBeforeLast = self.view.substr(last-2)
-            charBeforeThat = self.view.substr(last-3)
+            size = sel.size()
 
-            # did we type two curly braces?
-            if(lastChar == '{' and charBeforeLast == '{'):
-                # If this is something like {{{}  }}
-                if(charBeforeThat == '{'):
-                    # remove following 2 spaces and add usual spacing
-                    self.view.erase(edit, sublime.Region(last+1, last+3))
-                    self.addSpaces(edit, last)
-                else:
-                    self.addSpaces(edit, last)
+            # if we're not selecting text
+            if (size == 0):
+                last           = sel.end()
+                lastChar       = self.view.substr(last-1)
+                charBeforeLast = self.view.substr(last-2)
+                charBeforeThat = self.view.substr(last-3)
 
-            # triple {{{ }}}
-            elif(lastChar == '{' and charBeforeLast == ' ' and charBeforeThat == '{'):
-                # erase previous space
-                self.view.erase(edit, sublime.Region(last-1, last-2))
+                # did we type two curly braces?
+                if(lastChar == '{' and charBeforeLast == '{'):
+                    # If this is something like {{{}  }}
+                    if(charBeforeThat == '{'):
+                        # remove following 2 spaces and add usual spacing
+                        self.view.erase(edit, sublime.Region(last+1, last+3))
+                        self.addSpaces(edit, last)
+                    else:
+                        self.addSpaces(edit, last)
+
+                # triple {{{ }}}
+                elif(lastChar == '{' and charBeforeLast == ' ' and charBeforeThat == '{'):
+                    # erase previous space
+                    self.view.erase(edit, sublime.Region(last-1, last-2))
+                    
+                    # erase latter space
+                    self.view.erase(edit, sublime.Region(last, last+1))
+
+                    # add two spaces and center
+                    self.addSpaces(edit, last-1)
+            else:
+                start = sel.begin()
+                end = sel.end()
+                charBeforeStart = self.view.substr(start - 1)
+                charBeforeThat = self.view.substr(start - 2)
+                charEvenBeforeThat = self.view.substr(start - 3)
+                charAfterEnd = self.view.substr(end)
+                charAfterThat = self.view.substr(end + 1)
+                charEvenAfterThat = self.view.substr(end + 2)
                 
-                # erase latter space
-                self.view.erase(edit, sublime.Region(last, last+1))
+                # Double {{ }}
+                if (charBeforeThat == '{' and charBeforeStart == '{' and charAfterEnd == '}' and charAfterThat == '}'):
+                    # put a space on either side of the selection
+                    self.view.insert(edit, start, ' ')
+                    self.view.insert(edit, end + 1, ' ')
 
-                # add two spaces and center
-                self.addSpaces(edit, last-1)
+                # more than double
+                elif(charEvenBeforeThat == '{' and charBeforeThat == ' ' and charBeforeStart == '{' and charAfterEnd == '}' and charAfterThat == ' ' and charEvenAfterThat == '}'):
+                    # erase previous space
+                    self.view.erase(edit, sublime.Region(start - 1, start - 2))
+                    
+                    # erase latter space
+                    self.view.erase(edit, sublime.Region(end,  end + 1))
+
+                    # rewrap the selection
+                    self.view.insert(edit, start - 1, ' ')
+                    self.view.insert(edit, end, ' ')                
 
 
     def addSpaces(self, edit, pos):
