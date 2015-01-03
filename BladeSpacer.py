@@ -60,16 +60,27 @@ class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
         for sel in self.view.sel():
 
             last = sel.end()
+            endOfLine = self.view.find_by_class(last, True, sublime.CLASS_LINE_END)
+            lineStr   = self.view.substr(sublime.Region(last, endOfLine))
 
             # Insert an exclamation like usual keypress
             self.view.insert(edit, last, "!")
 
-            # Add space and ending
-            self.view.insert(edit, last+1, "  !!")
-            
-            # move cursor to middle
-            self.view.sel().subtract(sublime.Region(last+5, last+5))
-            self.view.sel().add(sublime.Region(last+2, last+2))
+            # This is a new set of braces
+            if (lineStr[0] == '}'):
+                # Add space and ending
+                self.view.insert(edit, last+1, "  !!")
+                
+                # move cursor to middle
+                self.view.sel().subtract(sublime.Region(last+5, last+5))
+                self.view.sel().add(sublime.Region(last+2, last+2))
+
+            # Otherwise we're changing an already existing set
+            else:
+                closingPos = lineStr.find('}')
+                insertPos = last + closingPos + 1
+                self.view.erase(edit, sublime.Region(insertPos, insertPos + 1))
+                self.view.insert(edit, insertPos, '!!')
 
 
 class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
@@ -98,34 +109,72 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 class BladeSpacerCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         # insert any closing brackets like sublime normally does
-        self.view.run_command('insert_snippet', {"contents": "{$0}"})
+        self.view.run_command('insert_snippet', {"contents": "{${0:$SELECTION}}"})
 
         for sel in self.view.sel():
-            last           = sel.end()
-            lastChar       = self.view.substr(last-1)
-            charBeforeLast = self.view.substr(last-2)
-            charBeforeThat = self.view.substr(last-3)
 
-            # did we type two curly braces?
-            if(lastChar == '{' and charBeforeLast == '{'):
-                # If this is something like {{{}  }}
-                if(charBeforeThat == '{'):
-                    # remove following 2 spaces and add usual spacing
-                    self.view.erase(edit, sublime.Region(last+1, last+3))
-                    self.addSpaces(edit, last)
-                else:
-                    self.addSpaces(edit, last)
+            # if we're not selecting text
+            if (sel.empty()):
+                last           = sel.end()
+                lastChar       = self.view.substr(last-1)
+                charBeforeLast = self.view.substr(last-2)
+                charBeforeThat = self.view.substr(last-3)
 
-            # triple {{{ }}}
-            elif(lastChar == '{' and charBeforeLast == ' ' and charBeforeThat == '{'):
-                # erase previous space
-                self.view.erase(edit, sublime.Region(last-1, last-2))
+                # did we type two curly braces?
+                if(lastChar == '{' and charBeforeLast == '{'):
+                    # If this is something like {{{}  }}
+                    if(charBeforeThat == '{'):
+                        endOfLine = self.view.find_by_class(last, True, sublime.CLASS_LINE_END)
+                        lineStr = self.view.substr(sublime.Region(last, endOfLine))
+                        # since we automatically add a curly bracket, we need to check beyond this
+                        firstCurly = lineStr.find('}')
+                        nextCurly = lineStr.find('}', firstCurly + 1)
+
+                        # check to see if we're adding brackets to an existing set, fix if needed
+                        if (nextCurly != -1):
+                            self.view.erase(edit, sublime.Region(last, last + 1))
+                            self.view.insert(edit, last + (nextCurly - firstCurly), '}')
+
+                    else:
+                        self.addSpaces(edit, last)
+
+                # triple {{{ }}}
+                elif(lastChar == '{' and charBeforeLast == ' ' and charBeforeThat == '{'):
+                    # erase previous space
+                    self.view.erase(edit, sublime.Region(last-1, last-2))
+                    
+                    # erase latter space
+                    self.view.erase(edit, sublime.Region(last, last+1))
+
+                    # add two spaces and center
+                    self.addSpaces(edit, last-1)
+            else:
+                start               = sel.begin()
+                end                 = sel.end()
+                charBeforeStart     = self.view.substr(start - 1)
+                charBeforeThat      = self.view.substr(start - 2)
+                charEvenBeforeThat  = self.view.substr(start - 3)
+                charAfterEnd        = self.view.substr(end)
+                charAfterThat       = self.view.substr(end + 1)
+                charEvenAfterThat   = self.view.substr(end + 2)
                 
-                # erase latter space
-                self.view.erase(edit, sublime.Region(last, last+1))
+                # Double {{ }}
+                if (charBeforeThat == '{' and charBeforeStart == '{' and charAfterEnd == '}' and charAfterThat == '}'):
+                    # put a space on either side of the selection
+                    self.view.insert(edit, start, ' ')
+                    self.view.insert(edit, end + 1, ' ')
 
-                # add two spaces and center
-                self.addSpaces(edit, last-1)
+                # more than double
+                elif(charEvenBeforeThat == '{' and charBeforeThat == ' ' and charBeforeStart == '{' and charAfterEnd == '}' and charAfterThat == ' ' and charEvenAfterThat == '}'):
+                    # erase previous space
+                    self.view.erase(edit, sublime.Region(start - 1, start - 2))
+                    
+                    # erase latter space
+                    self.view.erase(edit, sublime.Region(end,  end + 1))
+
+                    # rewrap the selection
+                    self.view.insert(edit, start - 1, ' ')
+                    self.view.insert(edit, end, ' ')
 
 
     def addSpaces(self, edit, pos):
