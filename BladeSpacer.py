@@ -60,16 +60,27 @@ class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
         for sel in self.view.sel():
 
             last = sel.end()
+            endOfLine = self.view.find_by_class(last, True, sublime.CLASS_LINE_END)
+            lineStr   = self.view.substr(sublime.Region(last, endOfLine))
 
             # Insert an exclamation like usual keypress
             self.view.insert(edit, last, "!")
 
-            # Add space and ending
-            self.view.insert(edit, last+1, "  !!")
-            
-            # move cursor to middle
-            self.view.sel().subtract(sublime.Region(last+5, last+5))
-            self.view.sel().add(sublime.Region(last+2, last+2))
+            # This is a new set of braces
+            if (lineStr[0] == '}'):
+                # Add space and ending
+                self.view.insert(edit, last+1, "  !!")
+                
+                # move cursor to middle
+                self.view.sel().subtract(sublime.Region(last+5, last+5))
+                self.view.sel().add(sublime.Region(last+2, last+2))
+
+            # Otherwise we're changing an already existing set
+            else:
+                closingPos = lineStr.find('}')
+                insertPos = last + closingPos + 1
+                self.view.erase(edit, sublime.Region(insertPos, insertPos + 1))
+                self.view.insert(edit, insertPos, '!!')
 
 
 class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
@@ -138,14 +149,14 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                     # add two spaces and center
                     self.addSpaces(edit, last-1)
             else:
-                start = sel.begin()
-                end = sel.end()
-                charBeforeStart = self.view.substr(start - 1)
-                charBeforeThat = self.view.substr(start - 2)
-                charEvenBeforeThat = self.view.substr(start - 3)
-                charAfterEnd = self.view.substr(end)
-                charAfterThat = self.view.substr(end + 1)
-                charEvenAfterThat = self.view.substr(end + 2)
+                start               = sel.begin()
+                end                 = sel.end()
+                charBeforeStart     = self.view.substr(start - 1)
+                charBeforeThat      = self.view.substr(start - 2)
+                charEvenBeforeThat  = self.view.substr(start - 3)
+                charAfterEnd        = self.view.substr(end)
+                charAfterThat       = self.view.substr(end + 1)
+                charEvenAfterThat   = self.view.substr(end + 2)
                 
                 # Double {{ }}
                 if (charBeforeThat == '{' and charBeforeStart == '{' and charAfterEnd == '}' and charAfterThat == '}'):
