@@ -114,9 +114,17 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                 if(lastChar == '{' and charBeforeLast == '{'):
                     # If this is something like {{{}  }}
                     if(charBeforeThat == '{'):
-                        # remove following 2 spaces and add usual spacing
-                        self.view.erase(edit, sublime.Region(last+1, last+3))
-                        self.addSpaces(edit, last)
+                        line = self.view.line(last)
+                        lineStr = self.view.substr(line)
+                        # since we automatically add a curly bracket, we need to check beyond this
+                        firstCurly = lineStr.find('}')
+                        nextCurly = lineStr.find('}', firstCurly + 1)
+
+                        # check to see if we're adding brackets to an existing set, fix if needed
+                        if (nextCurly != -1):
+                            self.view.erase(edit, sublime.Region(last, last + 1))
+                            self.view.insert(edit, last + (nextCurly - firstCurly), '}')
+
                     else:
                         self.addSpaces(edit, last)
 
