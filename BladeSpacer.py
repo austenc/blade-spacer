@@ -101,10 +101,9 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
         self.view.run_command('insert_snippet', {"contents": "{${0:$SELECTION}}"})
 
         for sel in self.view.sel():
-            size = sel.size()
 
             # if we're not selecting text
-            if (size == 0):
+            if (sel.empty()):
                 last           = sel.end()
                 lastChar       = self.view.substr(last-1)
                 charBeforeLast = self.view.substr(last-2)
@@ -114,8 +113,8 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                 if(lastChar == '{' and charBeforeLast == '{'):
                     # If this is something like {{{}  }}
                     if(charBeforeThat == '{'):
-                        line = self.view.line(last)
-                        lineStr = self.view.substr(line)
+                        endOfLine = self.view.find_by_class(last, True, sublime.CLASS_LINE_END)
+                        lineStr = self.view.substr(sublime.Region(last, endOfLine))
                         # since we automatically add a curly bracket, we need to check beyond this
                         firstCurly = lineStr.find('}')
                         nextCurly = lineStr.find('}', firstCurly + 1)
