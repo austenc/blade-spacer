@@ -1,4 +1,4 @@
-Blade Spacer
+Laravel Blade Spacer
 ============
 
 Automatically adds spaces to laravel blade syntax for readability.
