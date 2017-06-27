@@ -92,6 +92,7 @@ class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
                 self.view.insert(edit, insertPos, '!!')
 
 
+# Called when there is NO selection made and preceding text looks like `{{ -`
 class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
@@ -114,6 +115,29 @@ class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 
             self.view.sel().subtract(sublime.Region(pos, pos))
             self.view.sel().add(sublime.Region(middle, middle))
+
+
+# This is only called when there is a selection, and the preceding text
+# contains a string like `{{ `
+class BladeSpacerCommentSelectionCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        # Surround the selection with dashes
+        self.view.run_command(
+            'insert_snippet', {"contents": "-${0:$SELECTION}-"})
+
+        for sel in self.view.sel():
+
+            begin = sel.begin()
+            end = sel.end()
+            before = self.view.substr(sublime.Region(begin, begin - 4))
+            # if typing some blade comments with this selection, add spaces
+            if before == "{ --":
+                # remove the extra spaces
+                self.view.erase(edit, sublime.Region(begin - 3, begin - 2))
+                self.view.erase(edit, sublime.Region(end + 1, end + 2))
+                # add new spaces
+                self.view.insert(edit, begin - 1, ' ')
+                self.view.insert(edit, end, ' ')
 
 
 class BladeSpacerCommand(sublime_plugin.TextCommand):
@@ -168,6 +192,7 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
 
                     # add two spaces and center
                     self.addSpaces(edit, last - 1)
+            # We are selecting text, so mind the selection
             else:
                 start = sel.begin()
                 end = sel.end()
@@ -179,15 +204,13 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                 charEvenAfterThat = self.view.substr(end + 2)
 
                 # Double {{ }}
-                if (charBeforeThat == '{' and
-                        charBeforeStart == '{' and
-                        charAfterEnd == '}' and
-                        charAfterThat == '}'):
+                if (charBeforeThat == '{' and charBeforeStart == '{' and
+                        charAfterEnd == '}' and charAfterThat == '}'):
                     # put a space on either side of the selection
                     self.view.insert(edit, start, ' ')
                     self.view.insert(edit, end + 1, ' ')
 
-                # more than double
+                # more than double, like {{{ }}}
                 elif(charEvenBeforeThat == '{' and
                         charBeforeThat == ' ' and
                         charBeforeStart == '{' and

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## v2.4.0
+ - Restrict plugin keybinds to only take effect in PHP and blade files #9
+ - Comment syntax now surrounds pre-existing selections properly - #10
+
 ## v2.3.0
  - Surround selection by typing braces after making a selection
  - Convert a double brace `{{` to L5 unescaped without it being weird
