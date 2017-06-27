@@ -59,8 +59,6 @@ class BladeSpacerFormatCommand(sublime_plugin.TextCommand):
                 offset += 1
 
     def validSequence(self, tag, char, check='{'):
-        print(tag)
-        print("CHECK:" + check * 2)
         return (tag == check * 2 and (char == check or char == '-'))
 
 
