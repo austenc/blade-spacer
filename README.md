@@ -7,6 +7,14 @@ Plugin for Sublime Text 3 that adds in spaces after the opening blade tag and be
 
 Installing
 ----------
+### Easy Install (Package Control)
+You can install this plugin through the [Package Control](https://packagecontrol.io/installation).
+
+1. Press ⌘/Ctrl + ⇧ + P to open the command palette.
+2. Type `Package Control: Install Package` and press enter. Then search for `Laravel Blade Spacer`.
+
+
+### Manual Installation (Not Recommended)
 **Without Git:** Download the latest source from `GitHub <http://github.com/austenc/blade-spacer>`. Copy the whole directory into the Packages directory.
 
 **With Git:** Clone the repository in your Sublime Text Packages directory:
