@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## v2.4.2
+ - Fixed automatic braces when inside a quote i.e. `<h1 class="|">` - #5
+
 ## v2.4.1
- - Added support for wrapping a selection with `{!! !!}` 
+ - Added support for wrapping a selection with `{!! !!}`  - #12
 
 ## v2.4.0
  - Restrict plugin keybinds to only take effect in PHP and blade files #9

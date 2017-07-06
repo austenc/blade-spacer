@@ -62,6 +62,7 @@ class BladeSpacerFormatCommand(sublime_plugin.TextCommand):
         return (tag == check * 2 and (char == check or char == '-'))
 
 
+# Handles {!! !!} style entries
 class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
@@ -159,7 +160,7 @@ class BladeSpacerCommentSelectionCommand(sublime_plugin.TextCommand):
                 self.view.insert(edit, begin - 1, ' ')
                 self.view.insert(edit, end, ' ')
 
-
+# Handles the general {{ }} and {{{ }}}
 class BladeSpacerCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
@@ -175,6 +176,7 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                 lastChar = self.view.substr(last - 1)
                 charBeforeLast = self.view.substr(last - 2)
                 charBeforeThat = self.view.substr(last - 3)
+                charAfter = self.view.substr(last + 1)
 
                 # did we type two curly braces?
                 if(lastChar == '{' and charBeforeLast == '{'):
@@ -198,6 +200,12 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                                 edit, last + (nextCurly - firstCurly), '}')
 
                     else:
+                        # If we're typing this in the middle of some quotes,
+                        # add an additional end curly brace, since sublime
+                        # doesn't auto-close braces inside quotes all the time
+                        if (charBeforeThat == '"' and charAfter == '"'):
+                            self.view.insert(edit, last + 1, '}')
+
                         self.addSpaces(edit, last)
 
                 # triple {{{ }}}
@@ -248,7 +256,8 @@ class BladeSpacerCommand(sublime_plugin.TextCommand):
                     self.view.insert(edit, end, ' ')
 
     def addSpaces(self, edit, pos):
-        # subtract current region from selection
+        # subtract current region from selection so we don't end up with
+        # two selections in some cases
         self.view.sel().subtract(sublime.Region(pos, pos))
 
         # add 2 spaces
