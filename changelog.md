@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## v2.4.1
+ - Added support for wrapping a selection with `{!! !!}` 
+
 ## v2.4.0
  - Restrict plugin keybinds to only take effect in PHP and blade files #9
  - Comment syntax now surrounds pre-existing selections properly - #10

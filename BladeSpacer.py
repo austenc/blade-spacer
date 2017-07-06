@@ -92,6 +92,26 @@ class BladeSpacerFiveCommand(sublime_plugin.TextCommand):
                 self.view.insert(edit, insertPos, '!!')
 
 
+# This is only called when there is a selection, and the preceding text
+# contains a string like `{{ `
+class BladeSpacerFiveSelectionCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        # Surround the selection with dashes
+        self.view.run_command(
+            'insert_snippet', {"contents": "!${0:$SELECTION}!"})
+
+        for sel in self.view.sel():
+
+            begin = sel.begin()
+            end = sel.end()
+            before = self.view.substr(sublime.Region(begin, begin - 3))
+            # if typing some blade comments with this selection, add spaces
+            if before == "{!!":
+                # add new spaces
+                self.view.insert(edit, begin, ' ')
+                self.view.insert(edit, end + 1, ' ')
+
+
 # Called when there is NO selection made and preceding text looks like `{{ -`
 class BladeSpacerCommentCommand(sublime_plugin.TextCommand):
 

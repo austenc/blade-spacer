@@ -4,6 +4,12 @@
 			{ "key": "preceding_text", "operator": "regex_contains", "operand": "\\{!$", "match_all": true }
 		]
 	},
+	{ "keys": ["!"], "command": "blade_spacer_five_selection", "context": [
+			{ "key": "selector", "operator": "equal", "operand": "embedding.php,text.html.blade" },
+			{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true },
+			{ "key": "preceding_text", "operator": "regex_contains", "operand": "\\{", "match_all": true }
+		]
+	},	
 	{ "keys": ["-"], "command": "blade_spacer_comment", "context": [
 			{ "key": "selector", "operator": "equal", "operand": "embedding.php,text.html.blade" },
 			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
