@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## v2.4.3
+ - Enabled plugin in `.vue` file scope
+
 ## v2.4.2
  - Fixed automatic braces when inside a quote i.e. `<h1 class="|">` - #5
 
